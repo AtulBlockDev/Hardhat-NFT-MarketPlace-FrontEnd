@@ -4,11 +4,9 @@ import Header from "../components/Header"
 import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
 
 const client = new ApolloClient({
-  cache: new InMemoryCache,
-  uri: "https://api.studio.thegraph.com/query/47456/nftmarketplace/version/latest"
-}
-
-)
+  cache: new InMemoryCache(),
+  uri: "https://api.studio.thegraph.com/query/48703/nft-marketplace/version/latest",
+});
 
 export default function App({ Component, pageProps }) {
   

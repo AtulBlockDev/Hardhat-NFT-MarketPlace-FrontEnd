@@ -4,8 +4,10 @@ import { useEffect, useState } from "react"
 import { useMoralis, useWeb3Contract } from "react-moralis"
 import {networkMapping} from "../constants/networkMapping.json"
 import Image from "next/image";
-import { Card } from "web3uikit";
-import updateListingModal from "./updateListingModal";
+import { Card, useNotification } from "web3uikit";
+import UpdateListingModal from "./updateListingModal";
+import { ethers } from "ethers";
+
 
 export default function NftBox({nftAddress, tokenId, price, seller, marketplaceAddress }){
     const [imageURI,  setImageURI] = useState("")
@@ -14,6 +16,21 @@ export default function NftBox({nftAddress, tokenId, price, seller, marketplaceA
     const [tokenDescription, setTokenDescription] = useState("")
     const [showModal, setShowModal] = useState(false)
     const hideModal = ()=> setShowModal(false)
+
+    const dispatch = useNotification()
+    
+    
+    const handleBuyItemSuccess =  () => {
+      
+    
+    dispatch({
+        type:"sucess",
+        message: "ItemBought!",
+        title:"You have Bought the Item!, Refresh The Page!",
+        position: "topR"
+
+    })
+  }
 
    const { runContractFunction: getTokenURI } = useWeb3Contract({
      abi: BasicNft,
@@ -25,6 +42,18 @@ export default function NftBox({nftAddress, tokenId, price, seller, marketplaceA
      
      
     
+   })
+
+   const {runContractFunction: buyItem} = useWeb3Contract({
+    abi: nftMarketplaceAbi,
+    contractAddress: marketplaceAddress,
+    functionName: "buyitem",
+    msgValue: price,
+    params:{
+      nftAddress: nftAddress,
+      tokenId: tokenId,
+
+    }
    })
 
 
@@ -60,7 +89,10 @@ export default function NftBox({nftAddress, tokenId, price, seller, marketplaceA
      const formatedSellerAccount = isOwnedByUser ? "you" : seller;
 
      const handleCardClick = ()=> {
-      isOwnedByUser ? setShowModal(true) : console.log("buy item")
+      isOwnedByUser ? setShowModal(true) : buyItem({
+        onError: (error)=> console.log(error),
+        onSuccess: ()=> handleBuyItemSuccess()
+      })
      }
               
 
@@ -69,27 +101,32 @@ export default function NftBox({nftAddress, tokenId, price, seller, marketplaceA
         <div>
           {imageURI ? (
             <div>
-              <updateListingModal 
-              isVisible = {showModal}
-              nftAddress = {nftAddress}
-              tokenId = {tokenId}
-              marketplaceAddress = {marketplaceAddress}
-              onClose = {hideModal} />
-           
-              <Card title={tokenName} 
-                    description={tokenDescription} 
-                    onClick={handleCardClick()}>
+              <UpdateListingModal
+                isVisible={showModal}
+                nftAddress={nftAddress}
+                tokenId={tokenId}
+                marketplaceAddress={marketplaceAddress}
+                onClose={hideModal}
+              />
+
+              <Card
+                title={tokenName}
+                description={tokenDescription}
+                onClick={handleCardClick}
+              >
                 <div>{tokenId}</div>
                 <div>Owned By {formatedSellerAccount}</div>
+                <div className="font-bold">
+                  {ethers.utils.formatUnits(price, "ether")} ETH
+                </div>
                 <Image
-                  loader={imageURI}
+                  loader={() => imageURI}
                   src={imageURI}
                   height="200"
                   width="200"
                 />{" "}
               </Card>
-              </div>
-            
+            </div>
           ) : (
             <div>Image URI is not valid or undefined</div>
           )}

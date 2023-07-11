@@ -2,10 +2,11 @@ import '@/styles/globals.css'
 import {MoralisProvider} from "react-moralis"
 import Header from "../components/Header"
 import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
+import { NotificationProvider } from 'web3uikit';
 
 const client = new ApolloClient({
   cache: new InMemoryCache(),
-  uri: "https://api.studio.thegraph.com/query/48703/nft-marketplace/version/latest",
+  uri: "https://api.studio.thegraph.com/query/48703/graph-nftmp/version/latest",
 });
 
 export default function App({ Component, pageProps }) {
@@ -15,8 +16,10 @@ export default function App({ Component, pageProps }) {
       <title>NFT MARKETPLACE</title>
       <MoralisProvider initializeOnMount={false}>
         <ApolloProvider client={client}>
-          <Header />
-          <Component {...pageProps} />
+          <NotificationProvider>
+            <Header />
+            <Component {...pageProps} />
+          </NotificationProvider>
         </ApolloProvider>
       </MoralisProvider>
     </div>

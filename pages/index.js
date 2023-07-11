@@ -10,7 +10,7 @@ export default function Home() {
 
   const { chainId, isWeb3Enabled, account } = useMoralis();
   const chainString = chainId ? parseInt(chainId).toString() : null;
-  const marketplaceAddress = chainId ? networkMapping[chainString].NftMarketPlace[1]
+  const marketplaceAddress = chainId ? networkMapping[chainString].NftMarketPlace[0]
     : null;
 
   

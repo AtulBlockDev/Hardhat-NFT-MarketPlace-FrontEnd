@@ -1,15 +1,14 @@
+const { imageOptimizer } = require('next/dist/server/image-optimizer');
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
   experimental: {
     newNextLinkBehavior: false,
   },
-};
-
-module.exports = {
-  nextConfig,
   images: {
-    loader: "akamai",
-    path: "",
+    unoptimized: true,
   },
 };
+
+module.exports =  nextConfig
